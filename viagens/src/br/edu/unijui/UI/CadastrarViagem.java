@@ -9,9 +9,11 @@ import br.edu.unijui.dao.ViagemImpl;
 import br.edu.unijui.model.Aviao;
 import br.edu.unijui.model.Viagem;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -159,9 +161,13 @@ public class CadastrarViagem extends javax.swing.JFrame {
                     jTextFieldData.getText());
            
             viagemImpl.inserirViagem(viagem);
+            
             AdministrarViagens adminViagensTela = new AdministrarViagens();
             adminViagensTela.setVisible(true);
             this.dispose();
+            
+        }catch(ParseException ex){
+             JOptionPane.showMessageDialog(null, "Formato de data não suportado.");   
         }catch(Exception ex){
              Logger.getLogger(CadastrarViagem.class.getName()).log(Level.SEVERE, null, ex);
         } 

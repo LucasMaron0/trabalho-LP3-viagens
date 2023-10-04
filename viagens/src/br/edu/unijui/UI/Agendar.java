@@ -167,15 +167,8 @@ public class Agendar extends javax.swing.JFrame {
         try{
             Passageiro passageiro = (Passageiro) jComboBoxPassageiros.getSelectedItem();
             Viagem viagem = (Viagem) jComboBoxViagens.getSelectedItem();
-            Aviao aviao = viagem.getAviao();
 
-            passageiro.setIdViagem(viagem.getId());
-            viagem.setTotalPassageiros(viagem.getTotalPassageiros() + 1);
-            aviao.setEmViagem(true);
-
-            passageiroImpl.updatePassageiro(passageiro);
-            viagemImpl.updateViagem(viagem);
-            aviaoImpl.updateAviao(aviao);
+            viagemImpl.agendarViagem(viagem, passageiro);
         
         }catch(Exception ex){
             Logger.getLogger(Agendar.class.getName()).log(Level.SEVERE, null, ex);

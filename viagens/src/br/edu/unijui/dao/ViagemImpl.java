@@ -23,9 +23,13 @@ import java.util.logging.Logger;
 public class ViagemImpl implements ViagemDAO{
     
     private final Connection con;
-      
+    private final AviaoImpl aviaoImpl;
+    private final PassageiroImpl passageiroImpl; 
+    
     public ViagemImpl() throws ClassNotFoundException, SQLException {
        con = new DataBase().getConnection();
+       aviaoImpl = new AviaoImpl();
+       passageiroImpl = new PassageiroImpl();
     }
 
     @Override
@@ -34,7 +38,9 @@ public class ViagemImpl implements ViagemDAO{
         PreparedStatement pstmtInserir;
          
         try {
-   
+                    
+            aviaoImpl.setAviaoEmViagem(viagem.getAviao());
+            
            pstmtInserir = con.prepareStatement(""
          + "insert into viagem (aviaoID, origem, destino, data)" 
          + "values (?, ?, ?, ?)");
@@ -75,11 +81,8 @@ public class ViagemImpl implements ViagemDAO{
         return listViagens;
     }
     
-    public static List<Viagem> parseLista(ResultSet rst) throws SQLException, ClassNotFoundException{
-    
-        AviaoImpl aviaoImpl = new AviaoImpl();
-        PassageiroImpl passageiroImpl = new PassageiroImpl();
-        
+    public  List<Viagem> parseLista(ResultSet rst) throws SQLException, ClassNotFoundException{
+       
         List<Viagem> listViagens = new ArrayList<>();
         while(rst.next()){
             
@@ -124,6 +127,17 @@ public class ViagemImpl implements ViagemDAO{
             Logger.getLogger(AviaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+    }
+
+    @Override
+    public boolean agendarViagem(Viagem viagem, Passageiro passageiro) {
+        
+        passageiro.setIdViagem(viagem.getId());
+        viagem.getListaPassageiros().add(passageiro);
+        viagem.setTotalPassageiros(viagem.getListaPassageiros().size());
+        
+        passageiroImpl.updatePassageiro(passageiro);
+        return updateViagem(viagem);
     }
     
 }

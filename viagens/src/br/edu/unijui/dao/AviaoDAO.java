@@ -16,4 +16,5 @@ public interface AviaoDAO {
     public List<Aviao> getAllAvioes();
     public Aviao getAviao(int id);
     public boolean updateAviao(Aviao aviao);
+    public boolean setAviaoEmViagem(Aviao aviao);
 }

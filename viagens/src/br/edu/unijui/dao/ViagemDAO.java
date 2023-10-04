@@ -5,6 +5,7 @@
 package br.edu.unijui.dao;
 
 import br.edu.unijui.model.Aviao;
+import br.edu.unijui.model.Passageiro;
 import br.edu.unijui.model.Viagem;
 import java.util.List;
 
@@ -16,4 +17,5 @@ public interface ViagemDAO {
     public boolean inserirViagem(Viagem viagem);
     public List<Viagem> getAllViagens();
     public boolean updateViagem(Viagem viagem);
+    public boolean agendarViagem(Viagem viagem, Passageiro passageiro);
 }

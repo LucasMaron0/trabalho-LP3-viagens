@@ -134,6 +134,12 @@ public class AviaoImpl implements AviaoDAO {
             return false;
         }
     }
+
+    @Override
+    public boolean setAviaoEmViagem(Aviao aviao) {
+            aviao.setEmViagem(true);
+            return  updateAviao(aviao);
+    }
     
 }
       
