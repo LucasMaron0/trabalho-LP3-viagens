@@ -7,6 +7,7 @@ package br.edu.unijui.dao;
 import br.edu.unijui.model.Aviao;
 import br.edu.unijui.model.Passageiro;
 import br.edu.unijui.model.Viagem;
+import java.sql.SQLException;
 import java.util.List;
 
 /**

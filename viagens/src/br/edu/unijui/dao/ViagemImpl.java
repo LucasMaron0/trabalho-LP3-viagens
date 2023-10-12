@@ -28,6 +28,7 @@ public class ViagemImpl implements ViagemDAO{
     
     public ViagemImpl() throws ClassNotFoundException, SQLException {
        con = new DataBase().getConnection();
+       con.setAutoCommit(false);
        aviaoImpl = new AviaoImpl();
        passageiroImpl = new PassageiroImpl();
     }
@@ -130,14 +131,62 @@ public class ViagemImpl implements ViagemDAO{
     }
 
     @Override
-    public boolean agendarViagem(Viagem viagem, Passageiro passageiro) {
-        
+    public boolean agendarViagem(Viagem viagem, Passageiro passageiro){
+      
         passageiro.setIdViagem(viagem.getId());
         viagem.getListaPassageiros().add(passageiro);
         viagem.setTotalPassageiros(viagem.getListaPassageiros().size());
         
-        passageiroImpl.updatePassageiro(passageiro);
-        return updateViagem(viagem);
+        try {
+            con.setAutoCommit(false);
+           
+            PreparedStatement pstmtAtualizarPassageiro;                   
+            pstmtAtualizarPassageiro =con.prepareStatement(""
+            +  "update passageiro set nome = ?, passaporte = ?, idViagem = ?  where id = ?");
+            
+            pstmtAtualizarPassageiro.setString(1, passageiro.getNome());
+            pstmtAtualizarPassageiro.setString(2, passageiro.getPassaporte());
+            pstmtAtualizarPassageiro.setInt(3, passageiro.getIdViagem());
+            pstmtAtualizarPassageiro.setInt(4, passageiro.getId());
+          
+            
+            int rowsAfetadasPassageiro = pstmtAtualizarPassageiro.executeUpdate();
+            
+            PreparedStatement pstmtAtualizarViagem;
+            pstmtAtualizarViagem = con.prepareStatement(""
+            + "update viagem set aviaoId = ?, origem = ?,destino = ?, data = ?, totalPassageiros = ? where id = ? ");
+
+            pstmtAtualizarViagem.setInt(1, viagem.getAviao().getId());
+            pstmtAtualizarViagem.setString  (2, viagem.getOrigem());
+            pstmtAtualizarViagem.setString  (3, viagem.getDestino());
+            java.sql.Date dataSQL = new java.sql.Date(viagem.getData().getTime());
+            pstmtAtualizarViagem.setDate(4, dataSQL);
+            pstmtAtualizarViagem.setInt(5, viagem.getTotalPassageiros());
+            pstmtAtualizarViagem.setInt(6, 4321312);
+            
+    
+            int rowsAfetadasViagem = pstmtAtualizarViagem.executeUpdate();
+
+          
+            if(rowsAfetadasPassageiro >= 1 && rowsAfetadasViagem >= 1){  
+                con.commit();
+                return true;
+            }else{
+                con.rollback();
+                return false;
+            }
+     
+        }catch (SQLException ex) {
+            Logger.getLogger(ViagemImpl.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                con.rollback();
+            } catch (SQLException ex1) {
+                Logger.getLogger(ViagemImpl.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+            return false;
+        } 
     }
     
+
 }
+
