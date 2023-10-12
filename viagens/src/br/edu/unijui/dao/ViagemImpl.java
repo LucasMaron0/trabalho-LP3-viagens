@@ -162,7 +162,7 @@ public class ViagemImpl implements ViagemDAO{
             java.sql.Date dataSQL = new java.sql.Date(viagem.getData().getTime());
             pstmtAtualizarViagem.setDate(4, dataSQL);
             pstmtAtualizarViagem.setInt(5, viagem.getTotalPassageiros());
-            pstmtAtualizarViagem.setInt(6, 4321312);
+            pstmtAtualizarViagem.setInt(6, viagem.getId());
             
     
             int rowsAfetadasViagem = pstmtAtualizarViagem.executeUpdate();
