@@ -8,13 +8,13 @@ import br.edu.unijui.dataBase.DataBase;
 import br.edu.unijui.model.Aviao;
 import br.edu.unijui.model.Passageiro;
 import br.edu.unijui.model.Viagem;
+import br.edu.unijui.utils.LoggerUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,12 +25,14 @@ public class ViagemImpl implements ViagemDAO{
     private final Connection con;
     private final AviaoImpl aviaoImpl;
     private final PassageiroImpl passageiroImpl; 
+    private final LoggerUtils loggerUtils;
     
     public ViagemImpl() throws ClassNotFoundException, SQLException {
        con = new DataBase().getConnection();
        con.setAutoCommit(false);
        aviaoImpl = new AviaoImpl();
        passageiroImpl = new PassageiroImpl();
+       loggerUtils = LoggerUtils.getLoggerUtils();
     }
 
     @Override
@@ -53,10 +55,18 @@ public class ViagemImpl implements ViagemDAO{
             java.sql.Date dataSQL = new java.sql.Date(viagem.getData().getTime());
             pstmtInserir.setDate(4, dataSQL);
            
-            return pstmtInserir.execute();
+            boolean sucesso = pstmtInserir.execute();
+            
+            if(sucesso){
+                loggerUtils.logMessage("Sucesso ao inserir viagem");
+                
+            }else{
+                loggerUtils.logMessage("Falha ao inserir viagem - ");
+            }         
+            return sucesso;
             
         } catch (SQLException ex) {
-            Logger.getLogger(AviaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            loggerUtils.logMessage("Falha ao inserir viagem - " + ex.getMessage());
             return false;
         }
     }
@@ -74,11 +84,13 @@ public class ViagemImpl implements ViagemDAO{
             ResultSetMetaData metaData = resultSet.getMetaData();
             listViagens = parseLista(resultSet);
             resultSet.close();
+            
+            loggerUtils.logMessage("Sucesso ao buscar viagens");
                  
         }catch (Exception ex) {
-            System.out.print(ex.getMessage());
+            loggerUtils.logMessage("Falha ao buscar viagens - " + ex.getMessage());
         } 
-    
+        
         return listViagens;
     }
     
@@ -122,10 +134,19 @@ public class ViagemImpl implements ViagemDAO{
             pstmtUpdate.setInt(5, viagem.getTotalPassageiros());
             pstmtUpdate.setInt(6, viagem.getId());
            
-            return pstmtUpdate.execute();
+            boolean sucesso = pstmtUpdate.execute();
+            
+            if(sucesso){
+                loggerUtils.logMessage("Sucesso ao atualizar viagem");
+                
+            }else{
+                loggerUtils.logMessage("Falha ao atualizar viagem");
+            }         
+            
+            return sucesso;
             
         } catch (SQLException ex) {
-            Logger.getLogger(AviaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            loggerUtils.logMessage("Falha ao atualizar viagem - " + ex.getMessage());
             return false;
         }
     }
@@ -170,18 +191,20 @@ public class ViagemImpl implements ViagemDAO{
           
             if(rowsAfetadasPassageiro >= 1 && rowsAfetadasViagem >= 1){  
                 con.commit();
+                loggerUtils.logMessage("Sucesso ao agendar viagem.");
                 return true;
             }else{
+                loggerUtils.logMessage("Falha ao agendar viagem, executando rollback... ");
                 con.rollback();
                 return false;
             }
      
         }catch (SQLException ex) {
-            Logger.getLogger(ViagemImpl.class.getName()).log(Level.SEVERE, null, ex);
+            loggerUtils.logMessage("Falha ao agendar viagem - " + ex.getMessage());
             try {
                 con.rollback();
             } catch (SQLException ex1) {
-                Logger.getLogger(ViagemImpl.class.getName()).log(Level.SEVERE, null, ex1);
+              loggerUtils.logMessage("Falha ao agendar viagem - " + ex.getMessage());
             }
             return false;
         } 

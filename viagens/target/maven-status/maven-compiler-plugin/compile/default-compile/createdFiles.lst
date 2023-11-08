@@ -48,6 +48,7 @@ br\edu\unijui\UI\DetalharViagens$4.class
 br\edu\unijui\UI\AdministrarViagens$2.class
 br\edu\unijui\UI\AdministrarViagens$5.class
 br\edu\unijui\UI\Home$3.class
+br\edu\unijui\utils\LoggerUtils.class
 br\edu\unijui\dataBase\PreparedStatements.class
 br\edu\unijui\UI\AdministrarViagens.class
 br\edu\unijui\UI\CadastrarPassageiro$4.class

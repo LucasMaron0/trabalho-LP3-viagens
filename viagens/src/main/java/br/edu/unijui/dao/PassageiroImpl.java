@@ -7,6 +7,7 @@ package br.edu.unijui.dao;
 import br.edu.unijui.dataBase.DataBase;
 import br.edu.unijui.model.Aviao;
 import br.edu.unijui.model.Passageiro;
+import br.edu.unijui.utils.LoggerUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,9 +23,12 @@ import java.util.logging.Logger;
 public class PassageiroImpl implements PassageiroDAO{
     
     private final Connection con;
+    private final LoggerUtils loggerUtils;
+    
     
     public PassageiroImpl() throws ClassNotFoundException, SQLException {
        con = new DataBase().getConnection();
+       loggerUtils = LoggerUtils.getLoggerUtils();
     }
 
     @Override
@@ -40,10 +44,17 @@ public class PassageiroImpl implements PassageiroDAO{
             
             pstmtInserir.setString(1, passageiro.getNome());
             pstmtInserir.setString  (2, passageiro.getPassaporte());
-            return pstmtInserir.execute();
+           
+            boolean sucesso = pstmtInserir.execute();
+            if(sucesso){
+                 loggerUtils.logMessage("Sucesso ao inserir passageiro");
+            }else{
+                loggerUtils.logMessage("Erro ao inserir passageiro");
+            }
+            return sucesso;
             
         } catch (SQLException ex) {
-            Logger.getLogger(AviaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            loggerUtils.logMessage("Erro ao inserir passageiro - " +  ex.getMessage());
             return false;
         }
     }
@@ -55,16 +66,18 @@ public class PassageiroImpl implements PassageiroDAO{
        List<Passageiro> listaPassageiros = new ArrayList<>();
     
         try{     
-         pstmtListar = con.prepareStatement("select * from passageiro");   
-         ResultSet resultSet = pstmtListar.executeQuery();
-         ResultSetMetaData metaData = resultSet.getMetaData();
-         listaPassageiros = parseLista(resultSet);
-         resultSet.close();
-                 
+            pstmtListar = con.prepareStatement("select * from passageiro");   
+            ResultSet resultSet = pstmtListar.executeQuery();
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            listaPassageiros = parseLista(resultSet);
+            resultSet.close();
+             loggerUtils.logMessage("Sucesso ao buscar passageiros");
+
         }catch (SQLException ex) {
-        
+             loggerUtils.logMessage("Erro ao buscar lista com todos os passageiros - " +  ex.getMessage());
         }
-    return listaPassageiros;
+        
+        return listaPassageiros;
     }
     
     public static List<Passageiro> parseLista(ResultSet rst) throws SQLException {
@@ -82,15 +95,23 @@ public class PassageiroImpl implements PassageiroDAO{
 
     public  List<Passageiro> buscarPassageirosNaViagem(int idViagem) throws SQLException{
 
-        List<Passageiro> passageirosNaViagem = new ArrayList<>();
-        List<Passageiro> listPassageiros = getAllPassageiros();
+       PreparedStatement pstmtListar;
+       List<Passageiro> listaPassageiros = new ArrayList<>();
+    
+        try{     
+            pstmtListar = con.prepareStatement("select * from passageiro where idViagem = ? ");   
+            pstmtListar.setInt(1, idViagem);
+            ResultSet resultSet = pstmtListar.executeQuery();
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            listaPassageiros = parseLista(resultSet);
+            resultSet.close();
+             loggerUtils.logMessage("Sucesso ao buscar passageiros na viagem " +  idViagem);
 
-        for(Passageiro p: listPassageiros){
-            if(p.getIdViagem() == idViagem){
-                passageirosNaViagem.add(p);
-            }
+        }catch (SQLException ex) {
+             loggerUtils.logMessage("Erro ao buscar lista com todos os passageiros na viagem " + idViagem + " " +  ex.getMessage());
         }
-        return passageirosNaViagem;
+        
+        return listaPassageiros;
     }
 
     @Override
@@ -107,10 +128,17 @@ public class PassageiroImpl implements PassageiroDAO{
             pstmtAtualizar.setString(2, passageiro.getPassaporte());
             pstmtAtualizar.setInt(3, passageiro.getIdViagem());
             pstmtAtualizar.setInt(4, passageiro.getId());
-            return pstmtAtualizar.execute();
+           
+            boolean sucesso = pstmtAtualizar.execute();
+            if(sucesso){
+                 loggerUtils.logMessage("Sucesso ao atualizar passageiro");
+            }else{
+                loggerUtils.logMessage("Erro ao atualizar passageiro");
+            }
+            return sucesso;
             
         } catch (SQLException ex) {
-            Logger.getLogger(AviaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            loggerUtils.logMessage("Erro ao atualizar passageiro - " + ex.getMessage());
             return false;
         }
     }

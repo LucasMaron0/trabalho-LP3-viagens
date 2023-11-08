@@ -6,6 +6,7 @@ package br.edu.unijui.dao;
 
 import br.edu.unijui.dataBase.DataBase;
 import br.edu.unijui.model.Aviao;
+import br.edu.unijui.utils.LoggerUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,9 +25,11 @@ import java.util.logging.Logger;
 public class AviaoImpl implements AviaoDAO {
      
     private final Connection con;
+    private final LoggerUtils loggerUtils;
     
     public AviaoImpl() throws ClassNotFoundException, SQLException {
        con = new DataBase().getConnection();
+        loggerUtils = LoggerUtils.getLoggerUtils();
     }
 
     @Override
@@ -43,10 +46,17 @@ public class AviaoImpl implements AviaoDAO {
             pstmtInserir.setString(1, aviao.getModelo());
             pstmtInserir.setString  (2, aviao.getEmpresa());
             pstmtInserir.setBoolean(3, aviao.isEmViagem());
-            return pstmtInserir.execute();
+            
+            boolean sucesso = pstmtInserir.execute();
+            if(sucesso){
+                 loggerUtils.logMessage("Sucesso ao inserir aviao");
+            }else{
+                loggerUtils.logMessage("Erro ao inserir aviao");
+            }
+            return sucesso;
             
         } catch (SQLException ex) {
-            Logger.getLogger(AviaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            loggerUtils.logMessage("Erro ao inserir aviao - " + ex.getMessage());
             return false;
         }
     }        
@@ -64,11 +74,13 @@ public class AviaoImpl implements AviaoDAO {
          ResultSetMetaData metaData = resultSet.getMetaData();
          listAvioes = parseLista(resultSet);
          resultSet.close();
-                 
+          
+        loggerUtils.logMessage("Sucesso ao buscar lista de  avioes");
+        
         }catch (SQLException ex) {
-            System.out.print(ex.getMessage());
+           loggerUtils.logMessage("Erro ao buscar lista de  avioes");
         }
-    return listAvioes;
+         return listAvioes;
     }
 
     @Override
@@ -85,11 +97,13 @@ public class AviaoImpl implements AviaoDAO {
             aviao = parseAviao(resultSet);
          }
          resultSet.close();
-                 
+         loggerUtils.logMessage("Sucesso ao buscar detalhes do avião da viagem " + id);
+         
         }catch (SQLException ex) {
-            System.out.print(ex.getMessage());
+            loggerUtils.logMessage("Erro ao buscar detalhes do  aviao da viagem "  + id);
         }
-    return aviao;
+    
+        return aviao;
     } 
     
     public static List<Aviao> parseLista(ResultSet rst) throws SQLException{
@@ -127,10 +141,18 @@ public class AviaoImpl implements AviaoDAO {
             pstmtAtualizar.setString  (2, aviao.getEmpresa());
             pstmtAtualizar.setBoolean(3, aviao.isEmViagem());
             pstmtAtualizar.setInt(4, aviao.getId());
-            return pstmtAtualizar.execute();
+            
+            
+            boolean sucesso = pstmtAtualizar.execute();
+            if(sucesso){
+                 loggerUtils.logMessage("Sucesso ao atualizar aviao");
+            }else{
+                loggerUtils.logMessage("Erro ao atualizar aviao");
+            }
+            return sucesso;
             
         } catch (SQLException ex) {
-            Logger.getLogger(AviaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            loggerUtils.logMessage("Erro ao atualizar aviao - " + ex.getMessage());
             return false;
         }
     }

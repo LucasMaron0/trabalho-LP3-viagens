@@ -4,14 +4,11 @@
  */
 package br.edu.unijui.UI;
 
-import br.edu.unijui.dao.AviaoImpl;
 import br.edu.unijui.dao.PassageiroImpl;
 import br.edu.unijui.dao.ViagemImpl;
-import br.edu.unijui.model.Aviao;
 import br.edu.unijui.model.Passageiro;
 import br.edu.unijui.model.Viagem;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,17 +21,14 @@ public class Agendar extends javax.swing.JFrame {
 
     PassageiroImpl passageiroImpl;
     ViagemImpl viagemImpl;
-    AviaoImpl aviaoImpl;
+
             
     public Agendar() throws ClassNotFoundException, SQLException {
         passageiroImpl = new PassageiroImpl();
         viagemImpl = new ViagemImpl();
-        aviaoImpl = new AviaoImpl();
-        
         initComponents();
         setComboBoxPassageiros();
-        setComboBoxViagens();
-        
+        setComboBoxViagens();        
     }
 
     /**
